@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Body, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Req, Body, HttpCode, Headers } from '@nestjs/common';
 
 import { RankService } from './rank.service';
 import { RankDto } from './dto/rank.dto';
@@ -9,8 +9,8 @@ export class RankController {
   constructor(private rankService: RankService) {}
 
   @Get('load')
-  load(@Body() secretCode: SecretCodeDto) {
-    return this.rankService.load(secretCode)
+  load(@Headers() secretCode) {
+    return this.rankService.load(secretCode.secretcode)
   }
 
   @Post('reg')

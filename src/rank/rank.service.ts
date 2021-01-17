@@ -15,8 +15,8 @@ export class RankService {
     this.SECRET_CODE = 'shelter';
   }
   
-  load(secretCodeInt: SecretCodeInterface) { 
-    if(secretCodeInt.secretCode === this.SECRET_CODE) {
+  load(secretCode: SecretCodeInterface) { 
+    if(secretCode.toString() === this.SECRET_CODE) {
       return this.rank.findAll({
         limit: 10,
         order: [['score', 'DESC']]
