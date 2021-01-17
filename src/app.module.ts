@@ -13,7 +13,7 @@ import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env.dev',
+      envFilePath: '.env.prod',
       isGlobal: true,
       validationSchema: Joi.object({
         
