@@ -43,6 +43,8 @@ yarn-debug.log*
 yarn-error.log*
 
 .eslintcache
-.env
+
 .env.dev
 .env.prod
+
+/config/config.js

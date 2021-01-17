@@ -13,8 +13,7 @@ import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
-      ignoreEnvFile: true,
+      envFilePath: '.env.dev',
       isGlobal: true,
       validationSchema: Joi.object({
         
@@ -24,8 +23,8 @@ import { join } from 'path';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         dialect: 'mysql',
-        host: '127.0.0.1',
-        port: 3306,
+        host: configService.get('DATABASE_HOST'),
+        port: configService.get('DATABASE_PORT'),
         username: configService.get('DATABASE_USERNAME'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
