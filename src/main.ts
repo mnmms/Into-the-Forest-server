@@ -9,9 +9,9 @@ async function bootstrap() {
   // const httpsOptions = {
   //   key: fs.readFileSync('../../auth/key.pem'),
   //   cert: fs.readFileSync('../../auth/cert.pem'),
-  // };
-  //아래 줄에 추가해야함 {httpsOptions}
-  const app = await NestFactory.create(AppModule);
+  // };{httpsOptions}
+  
+  const app = await NestFactory.create(AppModule, );
 
   app.use(cookieParser());
   app.enableCors({
