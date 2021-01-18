@@ -24,7 +24,7 @@ module.exports = {
       },
       {
         id:3,
-        nickname: 'urusara',
+        nickname: 'ria',
         score: 3000,
         stage: 1,
         subcha:3,

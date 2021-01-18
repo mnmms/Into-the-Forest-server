@@ -1,23 +1,18 @@
 import { Module } from '@nestjs/common'
 import { SequelizeModule } from '@nestjs/sequelize'
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import * as Joi from '@hapi/joi';
-
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RankModule } from './rank/rank.module';
 import { Rank } from './rank/rank.model'
 import { RecordModule } from './record/record.module'
-import { join } from 'path';
+import { Record } from './record/record.model'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env.dev',
+      envFilePath: process.env.NODE_ENV === 'prod' ? '.env.prod' : '.env.dev',
       isGlobal: true,
-      validationSchema: Joi.object({
-        
-      })
     }),
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
@@ -28,7 +23,7 @@ import { join } from 'path';
         username: configService.get('DATABASE_USERNAME'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
-        models: [Rank],
+        models: [Rank, Record],
       }),
       inject: [ConfigService]
     }),
