@@ -7,6 +7,7 @@ import { RankModule } from './rank/rank.module';
 import { Rank } from './rank/rank.model'
 import { RecordModule } from './record/record.module'
 import { Record } from './record/record.model'
+import { HealthCheckModule } from './healthCheck/healthCheck.module'
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { Record } from './record/record.model'
       inject: [ConfigService]
     }),
     RankModule,
-    RecordModule
+    RecordModule,
+    HealthCheckModule
   ],
   controllers: [AppController],
   providers: [AppService],
