@@ -1,19 +1,42 @@
-import { Controller, HttpCode, Post } from '@nestjs/common';
+import { Controller, UseInterceptors, UploadedFile, Post, Body, Headers, HttpException, HttpStatus } from '@nestjs/common';
 import { RecordService } from './record.service'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 @Controller('record')
 export class RecordController {
-  constructor(private recordServie: RecordService) {}
+  constructor(
+    private recordServie: RecordService
+  ) {}
 
   @Post('reg')
-  @HttpCode(201)
-  create(record) {
-    return this.recordServie.create(record)
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    @Body('roomcode') roomcode: string, 
+    @Headers('password') password: string, 
+    @UploadedFile() file) {
+      if(roomcode && password && file) {
+        return this.recordServie.create(
+          roomcode, 
+          password, 
+          file.buffer, 
+          file.originalname)
+      } else {
+        throw new HttpException(
+          'Insufficient parameters', 
+          HttpStatus.BAD_REQUEST);
+      }
   }
 
   @Post('load')
-  @HttpCode(200)
-  findOne(record) {
-    return this.recordServie.findOne(record)
+  findOne(
+    @Body('roomcode') roomcode: string, 
+    @Headers('password') password: string) {
+    if(roomcode && password) {
+      return this.recordServie.findOne(roomcode, password)
+    } else {
+      throw new HttpException(
+        'Insufficient parameters',
+        HttpStatus.BAD_REQUEST);
+    }
   }
 }

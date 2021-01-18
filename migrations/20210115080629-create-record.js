@@ -11,7 +11,10 @@ module.exports = {
       roomcode: {
         type: Sequelize.STRING
       },
-      picture: {
+      url: {
+        type: Sequelize.STRING
+      },
+      key: {
         type: Sequelize.STRING
       },
       password: {
