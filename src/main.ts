@@ -1,28 +1,25 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config'
 import { config } from 'aws-sdk';
-//const fs = require('fs');
 
 async function bootstrap() {
-  // const httpsOptions = {
-  //   key: fs.readFileSync('../../auth/key.pem'),
-  //   cert: fs.readFileSync('../../auth/cert.pem'),
-  // };{httpsOptions}
-  
-  const app = await NestFactory.create(AppModule, );
 
-  app.use(cookieParser());
+  const app = await NestFactory.create(AppModule);
+
   app.enableCors({
     origin: [
-      "https://localhost:3000", 
+      "http://localhost:3000",
+      "https://localhost:3000",
       "https://intotheforest.space", 
       "https://intotheforest1.space", 
       "https://intotheforest2.space", 
-      "https://intotheforest4.space"], 
+      "https://intotheforest4.space", 
+      "https://www.intotheforest.space", 
+      "https://www.intotheforest1.space", 
+      "https://www.intotheforest2.space", 
+      "https://www.intotheforest4.space",], 
     methods: ["GET", "POST", "OPTION"],
-    credentials: true,
   });
 
   const configService = app.get(ConfigService);
