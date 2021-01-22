@@ -19,6 +19,7 @@ import { HealthCheckModule } from './healthCheck/healthCheck.module'
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         dialect: 'mysql',
+        timezone: '+09:00',
         host: configService.get('DATABASE_HOST'),
         port: configService.get('DATABASE_PORT'),
         username: configService.get('DATABASE_USERNAME'),
