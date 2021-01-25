@@ -1,31 +1,24 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config'
 import { config } from 'aws-sdk';
-//const fs = require('fs');
+import { RedisIoAdapter } from './adapter/redis.adapter';
+import { NestExpressApplication } from '@nestjs/platform-express'
+import * as helmet from 'helmet';
 
 async function bootstrap() {
-  // const httpsOptions = {
-  //   key: fs.readFileSync('../../auth/key.pem'),
-  //   cert: fs.readFileSync('../../auth/cert.pem'),
-  // };{httpsOptions}
-  
-  const app = await NestFactory.create(AppModule, );
 
-  app.use(cookieParser());
-  app.enableCors({
-    origin: [
-      "https://localhost:3000", 
-      "https://intotheforest.space", 
-      "https://intotheforest1.space", 
-      "https://intotheforest2.space", 
-      "https://intotheforest4.space"], 
-    methods: ["GET", "POST", "OPTION"],
-    credentials: true,
-  });
-
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
+
+  app.enableCors({
+    origin: configService.get('CORS_URL'),
+    methods: ["GET", "POST", "OPTION"],
+  });
+  
+  //app.use(helmet())
+  //app.useWebSocketAdapter(new RedisIoAdapter(app));
+  
   config.update({
     accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
     secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
@@ -33,5 +26,6 @@ async function bootstrap() {
   })
 
   await app.listen(4000);
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
