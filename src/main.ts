@@ -17,7 +17,7 @@ async function bootstrap() {
   });
   
   //app.use(helmet())
-  //app.useWebSocketAdapter(new RedisIoAdapter(app));
+  app.useWebSocketAdapter(new RedisIoAdapter(app));
   
   config.update({
     accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
