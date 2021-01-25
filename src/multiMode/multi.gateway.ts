@@ -13,6 +13,10 @@ import { Socket, Server } from 'socket.io'
 import { MultiService } from './multi.service';
 import { v4 as uuid } from 'uuid';
 
+const rooms = {};
+// const members = {};
+const isRoomFull = room => room.memberList.length >= room.maxNum;
+
 @WebSocketGateway()
 export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private logger: Logger = new Logger('MultiGateway');
@@ -22,45 +26,81 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor (){}
 
   @SubscribeMessage('create room')
-  async createGame(client: Socket, request) {
-    const newRoomId = uuid();
-    // const { error, payload } = await this.multiService.create(client.id, data);
-
-    // if (error) return this.throwMessage(client, error);
-
-    // const newRoom: any = payload;
-
-    //client.join(newRoom.id);
-    let data = this.extractRequest(request)
-    console.log(data.cb)
-    console.log(newRoomId)
-    // console.log(cb)
-    data.cb(newRoomId)
-    // client.emit('create room', newRoom);
-  }
-
-  extractRequest (req: any): { data: any, cb?: Function } {
-    if (Array.isArray(req)) {
-      const [data, cb] = req
-      return { data, cb }
-    } else {
-      return { data: req, cb: () => {} }
+  async createRoom(client: Socket, roomData) {
+    //구조분해로 masnum 만 new room에 넣기
+    const roomId = uuid();
+    const newRoom = {
+      ...roomData, //roomCode, maxNum
+      roomId: roomId,
+      memberList: [],
     }
+    rooms[roomData.roomCode] = newRoom;
+    
+    //client.broadcast.emit('room list', { rooms: rooms });
+    return roomId
   }
 
-  // @SubscribeMessage('hello!')
-  // handleEvent(client: Socket, payload: string): any {
-  //   //return 'data'
-  //  // console.log('sent!')
-  //   //this.logger.log(`${payload}`)
-  //   console.log(`hello from ${client.id}`);
-  //   this.server.emit('msgToClient', 'please');
+  @SubscribeMessage('join room')
+  async joinRoom(client: Socket, data) {
+    const { roomCode, nickName } = data;
+
+    if (!(roomCode in rooms)) return 'not exist';
+    if (isRoomFull(rooms[roomCode])) return 'room full';
+      const id = rooms[roomCode].roomId;
+      const memberList = rooms[roomCode].memberList;
+      const newMember = { ...data, clientId: client.id };
+
+      client.join(id)
+      memberList.push(newMember);
+  
+      //client.to(roomCode).emit('member joined', { newMember })
+      return id
+  }
+
+  // @SubscribeMessage('leave room')
+  // async leaveRoom(client: Socket, data) {
+  //   //data로 room code 가 들어온다는 가정 하에 
+  //   const { roomCode } = data
+  //   if (roomCode in rooms) {
+  //     client.leave(roomCode)
+  //     let memberList = rooms[roomCode].memberList;
+  //     let index = memberList.indexOf(client.id)
+  //     memberList.splice(index, 1);
+
+  //     if(memberList.length === 0) {
+
+  //     }
+  //   }
+
+  //     const id = rooms[roomCode].roomId;
+  //     const memberList = rooms[roomCode].memberList;
+  //     const newMember = { ...data, clientId: client.id };
+
+  //     client.join(id)
+  //     memberList.push(newMember);
+
+  //     client.to(roomCode).emit('member joined', { newMember })
+  //     return id
   // }
 
-  // @SubscribeMessage('identity')
-  //   async identity(@MessageBody() data: number): Promise<number> {
-  //     return data;
+  // socket.on(EVENT.LEAVE_ROOM, ({ roomId }) => {
+  //   if (roomId in rooms) {
+  //     socket.leave(roomId);
+  //     delete members[socket.id];
+
+  //     _.remove(rooms[roomId].memberList, member => member.socketId === socket.id);
+
+  //     if (_.isEmpty(rooms[roomId].memberList)) {
+  //       delete rooms[roomId];
+  //     } else {
+  //       socket.to(roomId).emit(EVENT.MEMBER_LEAVED, { socketId: socket.id });
+  //     }
+
+  //     socket.broadcast.emit(EVENT.ROOM_LIST, { rooms: _.values(rooms) });
+  //     io.to(roomId).emit(EVENT.RESET_GAME);
   //   }
+  // });
+
 
     afterInit(server: Server) {
       this.logger.log('Init');
@@ -72,9 +112,5 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   
     handleConnection(client: Socket) {
       this.logger.log(`Client connected: ${client.id}`)
-    }
-
-    private throwMessage(client: Socket, message: string): void {
-      client.emit('alert', message);
     }
 }
