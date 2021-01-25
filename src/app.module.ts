@@ -16,23 +16,23 @@ import { MultiModule } from './multiMode/multi.module';
       envFilePath: process.env.NODE_ENV === 'prod' ? '.env.prod' : '.env.dev',
       isGlobal: true,
     }),
-    // SequelizeModule.forRootAsync({
-    //   imports: [ConfigModule],
-    //   useFactory: (configService: ConfigService) => ({
-    //     dialect: 'mysql',
-    //     timezone: '+09:00',
-    //     host: configService.get('DATABASE_HOST'),
-    //     port: configService.get('DATABASE_PORT'),
-    //     username: configService.get('DATABASE_USERNAME'),
-    //     password: configService.get('DATABASE_PASSWORD'),
-    //     database: configService.get('DATABASE_NAME'),
-    //     models: [Rank, Record],
-    //   }),
-    //   inject: [ConfigService]
-    // }),
-    // RankModule,
-    // RecordModule,
-    // HealthCheckModule,
+    SequelizeModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        dialect: 'mysql',
+        timezone: '+09:00',
+        host: configService.get('DATABASE_HOST'),
+        port: configService.get('DATABASE_PORT'),
+        username: configService.get('DATABASE_USERNAME'),
+        password: configService.get('DATABASE_PASSWORD'),
+        database: configService.get('DATABASE_NAME'),
+        models: [Rank, Record],
+      }),
+      inject: [ConfigService]
+    }),
+    RankModule,
+    RecordModule,
+    HealthCheckModule,
     MultiModule
   ],
   controllers: [AppController],
