@@ -2,27 +2,23 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config'
 import { config } from 'aws-sdk';
+import { RedisIoAdapter } from './adapter/redis.adapter';
+import { NestExpressApplication } from '@nestjs/platform-express'
+import * as helmet from 'helmet';
 
 async function bootstrap() {
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const configService = app.get(ConfigService);
 
   app.enableCors({
-    origin: [
-      "http://localhost:3000",
-      "https://localhost:3000",
-      "https://intotheforest.space", 
-      "https://intotheforest1.space", 
-      "https://intotheforest2.space", 
-      "https://intotheforest4.space", 
-      "https://www.intotheforest.space", 
-      "https://www.intotheforest1.space", 
-      "https://www.intotheforest2.space", 
-      "https://www.intotheforest4.space",], 
+    origin: configService.get('CORS_URL'),
     methods: ["GET", "POST", "OPTION"],
   });
-
-  const configService = app.get(ConfigService);
+  
+  //app.use(helmet())
+  //app.useWebSocketAdapter(new RedisIoAdapter(app));
+  
   config.update({
     accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
     secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
@@ -30,5 +26,6 @@ async function bootstrap() {
   })
 
   await app.listen(4000);
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

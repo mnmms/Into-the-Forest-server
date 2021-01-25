@@ -36,12 +36,13 @@
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "helmet": "^4.4.1",
     "mysql2": "^2.2.5",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3",
     "sequelize-typescript": "^1.1.0",
-    "socket.io-redis": "^6.0.1",
+    "socket.io-redis": "^5.4.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
