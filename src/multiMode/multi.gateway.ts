@@ -36,9 +36,9 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     //this.server.emit('msgToClient', 'please');
     }
 
-  // afterInit(server: Server) {
-  //   this.logger.log('Init');
-  // }
+  afterInit(server: Server) {
+    this.logger.log('Init');
+  }
 
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
