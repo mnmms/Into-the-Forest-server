@@ -21,7 +21,8 @@ export class MultiService {
 
       const newMember = { //신규 멤버 생성
         nickName: nickName,
-        clientId: hostId}
+        clientId: hostId
+      }
   
       const newRoom = { // 신규 방 생성 
         maxNum: maxNum, 
@@ -37,7 +38,7 @@ export class MultiService {
   async join(hostId: string, userData: UserData) {
     const { roomCode, nickName } = userData
     if (!(roomCode in rooms)) return {error: '찾으시는 방이 없습니다 ㅠㅠ'};
-    
+
     const { memberList, roomId, maxNum } = rooms[roomCode];
     const isRoomFull = list => list.length >= maxNum;
 
@@ -53,6 +54,20 @@ export class MultiService {
     console.log('신규멤버',memberList)
   
     return { roomId: roomId, newMember: newMember } 
+  }
+
+  async alert(hostId: string, userData) {
+    const { roomCode } = userData;
+    const { roomId, memberList } = rooms[roomCode]
+
+    if(!(roomCode in rooms)) return {error: '방이 없군여!'}
+    
+    let index = memberList.forEach((ele, idx) => {
+      if(ele.clientId === hostId) return idx
+    })
+    let member = memberList[index]
+
+    return { roomId: roomId, newMember: member }
   }
 
   async leave(hostId: string, userData: UserData) {

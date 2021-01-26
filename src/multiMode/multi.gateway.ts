@@ -50,10 +50,26 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if(roomId) {
       client.join(roomId)
+      return { roomId: roomId }
+    }
+  }
+
+  @SubscribeMessage('member joined')
+  async alertMember(client: Socket, userData) {
+    const { roomId, error, newMember } = await this.multiService.alert(client.id, userData);
+
+    if(error) {
+      return { error: error }
+    }
+
+    if(roomId) {
       client.to(roomId).emit('member joined', { newMember }) //신규 멤버 입장 알림
       return { roomId: roomId }
     }
   }
+  
+  
+
 
   @SubscribeMessage('leave room')
   async leaveRoom(client: Socket, userData: UserData) {
