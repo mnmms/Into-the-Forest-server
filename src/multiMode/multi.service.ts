@@ -2,6 +2,8 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 
 import { v4 as uuid } from 'uuid';
 
+const rooms = {};
+
 @Injectable()
 export class MultiService {
 
@@ -12,19 +14,22 @@ export class MultiService {
   }
 
   async create(hostId: string, data: any): Promise<any> {
-    const newRoomId = uuid();
-
-    const newRoom: any = {
-      id: newRoomId,
-      hostId: hostId,
-    };
-
     try {
-      // await this.redisCacheService.setToGroup(GROUP.GAME, newRoomId, newRoom);
-      // await this.redisCacheService.setToGroup(GROUP.HOST_GAME, hostId, newRoomId);
-      return this.response(null, newRoom);
+      const { roomCode, maxNum } = data;
+      console.log(data)
+      if (!(roomCode in rooms)) new Error('not exist');  //룸코드 중복 검사 
+
+      const roomId = uuid(); // 신규 방 id 생성
+      const newRoom = { // 신규 방 생성 
+        maxNum: maxNum, 
+        roomId: roomId,
+        memberList: [],
+      }
+      rooms[roomCode] = newRoom; //방 목록에 추가
+
+      return { roomId: roomId };
     } catch (error) {
-      return this.response(error, null);
+      return { error : error };
     }
   }
 

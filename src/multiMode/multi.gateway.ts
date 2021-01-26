@@ -23,24 +23,18 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer() public server: Server;
 
-  constructor (){}
+  constructor (private multiService: MultiService){}
 
   @SubscribeMessage('create room')
-  async createRoom(client: Socket, roomData) {
-    //구조분해로 masnum 만 new room에 넣기
-    const roomId = uuid();
-    const newRoom = {
-      ...roomData, //roomCode, maxNum
-      roomId: roomId,
-      memberList: [],
-    }
-    rooms[roomData.roomCode] = newRoom;
-    
-    //client.broadcast.emit('room list', { rooms: rooms });
+  async createRoom(client: Socket, roomData): Promise<void>{
+    const { roomId, error } = await this.multiService.create(client.id, roomData);
+    if(error) return error
+    client.join(roomId)
     return roomId
+    
   }
 
-  @SubscribeMessage('join room')
+  @SubscribeMessage('join room') //룸으로 룸안에 룸 id로 넣기
   async joinRoom(client: Socket, data) {
     const { roomCode, nickName } = data;
 
@@ -54,6 +48,7 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
       memberList.push(newMember);
   
       //client.to(roomCode).emit('member joined', { newMember })
+      //객체 키 roomId 로 보내기 
       return id
   }
 
