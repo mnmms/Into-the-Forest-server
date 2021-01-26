@@ -28,10 +28,15 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('create room')
   async createRoom(client: Socket, roomData): Promise<void>{
     const { roomId, error } = await this.multiService.create(client.id, roomData);
-    if(error) return error
+    if(roomId) {
     client.join(roomId)
+    } 
+    if(error) {
+      console.log(error)
+      return error
+    }
+    console.log(roomId)
     return roomId
-    
   }
 
   @SubscribeMessage('join room') //룸으로 룸안에 룸 id로 넣기
