@@ -14,25 +14,19 @@ export class MultiService {
   }
 
   async create(hostId: string, data: any): Promise<any> {
-    
-      const { roomCode, maxNum } = data;
-      console.log(data)
-      
+      const { roomCode, maxNum } = data
 
-      if (roomCode in rooms) {
-        
-        return { error : null }; 
-      }   //룸코드 중복 검사 
-      
-      const roomId = uuid(); // 신규 방 id 생성
+      if (roomCode in rooms) return {error: '방 이름이 중복됩니다.'} //룸코드 중복 검사 
+
+      const roomId = uuid() // 신규 방 id 생성
       const newRoom = { // 신규 방 생성 
         maxNum: maxNum, 
         roomId: roomId,
         memberList: [],
       }
-      rooms[roomCode] = newRoom; //방 목록에 추가
+      rooms[roomCode] = newRoom //방 목록에 추가
 
-      return { roomId: roomId };
+      return { roomId: roomId }
   }
 
   // async setToGroup(group: string, key: string, value: any): Promise<any> {

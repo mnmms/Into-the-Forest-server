@@ -26,17 +26,17 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor (private multiService: MultiService){}
 
   @SubscribeMessage('create room')
-  async createRoom(client: Socket, roomData): Promise<void>{
-    const { roomId, error } = await this.multiService.create(client.id, roomData);
-    if(roomId) {
-    client.join(roomId)
-    } 
+  async createRoom(client: Socket, roomData): Promise<object>{
+    const { roomId, error } = await this.multiService.create(client.id, roomData)
+
     if(error) {
-      console.log(error)
-      return error
+      return { error: error }
     }
-    console.log(roomId)
-    return roomId
+
+    if(roomId) {
+      client.join(roomId)
+      return { roomId: roomId }
+    }
   }
 
   @SubscribeMessage('join room') //룸으로 룸안에 룸 id로 넣기
