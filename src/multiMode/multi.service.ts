@@ -1,72 +1,88 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { ChannelModeratedByAppInstanceUserSummary } from 'aws-sdk/clients/chime';
 
 import { v4 as uuid } from 'uuid';
+
+import { RoomData, UserData, ChatData } from './multi.interface'
 
 const rooms = {};
 
 @Injectable()
 export class MultiService {
 
-  constructor(
-    
-  ) {
-  
-  }
+  constructor() {}
 
-  async create(hostId: string, data: any): Promise<any> {
-      const { roomCode, maxNum } = data
+  async create(hostId: string, roomData: RoomData) {
+      const { roomCode, maxNum, nickName } = roomData
 
       if (roomCode in rooms) return {error: '방 이름이 중복됩니다.'} //룸코드 중복 검사 
 
       const roomId = uuid() // 신규 방 id 생성
+
+      const newMember = { //신규 멤버 생성
+        nickName: nickName,
+        clientId: hostId}
+  
       const newRoom = { // 신규 방 생성 
         maxNum: maxNum, 
         roomId: roomId,
-        memberList: [],
+        memberList: [newMember],
       }
+    
       rooms[roomCode] = newRoom //방 목록에 추가
-
+      console.log(rooms)
       return { roomId: roomId }
   }
 
-  // async setToGroup(group: string, key: string, value: any): Promise<any> {
-  //   const parsedGroup = await this.get(group);
+  async join(hostId: string, userData: UserData) {
+    const { roomCode, nickName } = userData
+    if (!(roomCode in rooms)) return {error: '찾으시는 방이 없습니다 ㅠㅠ'};
+    
+    const { memberList, roomId, maxNum } = rooms[roomCode];
+    const isRoomFull = list => list.length >= maxNum;
 
-  //   if (!parsedGroup) {
-  //     const newGroup = { [key]: value };
-  //     await this.set(group, newGroup);
-  //     return newGroup;
-  //   }
+    
+    if (isRoomFull(memberList)) return {error: '방이 꽉 찼어요!'}
 
-  //   parsedGroup[key] = value;
-  //   await this.set(group, parsedGroup);
-  //   return parsedGroup;
-  // }
-
+    const newMember = { //신규 멤버 생성
+      nickName: nickName,
+      clientId: hostId}
+    console.log(newMember)
+    
+    memberList.push(newMember); //기존 방에 신규멤버 추가
+    console.log('신규멤버',memberList)
   
-  // async join(playerId: string, gameId: string): Promise<any> {
-  //   try {
-  //     // const game = await this.getGame(gameId);
-
-  //     // if (!game) return this.response('not exist', null);
-
-  //     const vacancy = game.playerList.find(player => !player.id);
-
-  //     if (!vacancy) return this.response('full', null);
-
-  //     vacancy.id = playerId;
-  //     // await this.redisCacheService.setToGroup(GROUP.GAME, gameId, game);
-  //     // await this.redisCacheService.setToGroup(GROUP.PLAYER_GAME, playerId, gameId);
-  //     return this.response(null, game.playerList);
-  //   } catch (error) {
-  //     return this.response(error, null);
-  //   }
-  // }
-
-
-
-  private response(error: null | string, payload: any): any {
-    return { error, payload };
+    return { roomId: roomId, newMember: newMember } 
   }
 
+  async leave(hostId: string, userData: UserData) {
+    //data로 room code 가 들어온다는 가정 하에 
+    const { roomCode, nickName } = userData;
+    const { memberList, roomId } = rooms[roomCode];
+    if(roomCode in rooms) {
+      const index = memberList.forEach((ele, idx) => {
+        if(ele.clientId === hostId) return idx
+      });
+      memberList.splice(index, 1); //기존 멤버 목록에서 삭제
+      console.log(hostId,'님이 떠나셨습니다.')
+      console.log(memberList); 
+
+      return { roomId : roomId}
+    } else {
+      return { error : '룸이 없어요'}
+    }
+  }
+
+  async chat(hostId: string, chatData: ChatData) {
+    const { roomCode, chat } = chatData;
+    const { memberList, roomId } = rooms[roomCode]
+    
+    const index = memberList.forEach((ele, idx) => { //멤버 목록에 현재 hostid 있는지 확인
+      if(ele.clientId !== hostId) return idx
+    }) //chat 에서는 어떤 에러가 나는가? 
+
+    if(index) return { error: '방 회원이 아닙니다?!'} 
+    
+    return { roomId: roomId, chat: chat }
+  }
 }
