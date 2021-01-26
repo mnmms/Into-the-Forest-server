@@ -14,11 +14,16 @@ export class MultiService {
   }
 
   async create(hostId: string, data: any): Promise<any> {
-    try {
+    
       const { roomCode, maxNum } = data;
       console.log(data)
-      if (!(roomCode in rooms)) new Error('not exist');  //룸코드 중복 검사 
+      
 
+      if (roomCode in rooms) {
+        
+        return { error : null }; 
+      }   //룸코드 중복 검사 
+      
       const roomId = uuid(); // 신규 방 id 생성
       const newRoom = { // 신규 방 생성 
         maxNum: maxNum, 
@@ -28,9 +33,6 @@ export class MultiService {
       rooms[roomCode] = newRoom; //방 목록에 추가
 
       return { roomId: roomId };
-    } catch (error) {
-      return { error : error };
-    }
   }
 
   // async setToGroup(group: string, key: string, value: any): Promise<any> {
