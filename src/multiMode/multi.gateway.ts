@@ -15,9 +15,6 @@ import { v4 as uuid } from 'uuid';
 
 import { RoomData, UserData, ChatData } from './multi.interface'
 
-const rooms = {};
-const members = {}; // members를 따로 만들자
-
 @WebSocketGateway()
 export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private logger: Logger = new Logger('MultiGateway');
@@ -36,13 +33,13 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if(roomId) {
       client.join(roomId)
-      return { roomId: roomId }
+      return { clientId: client.id, roomId: roomId }
     }
   }
 
   @SubscribeMessage('join room')
   async joinRoom(client: Socket, userData: UserData): Promise<object> {
-    const { roomId, error, newMember } = await this.multiService.join(client.id, userData)
+    const { roomId, error } = await this.multiService.join(client.id, userData)
 
     if(error) {
       return { error: error }
@@ -50,12 +47,12 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if(roomId) {
       client.join(roomId)
-      return { roomId: roomId }
+      return { clientId: client.id, roomId: roomId }
     }
   }
 
   @SubscribeMessage('user joined')
-  async alertMember(client: Socket, userData) {
+  async alertUser(client: Socket, userData) {
     const { roomId, error, user } = await this.multiService.alert(client.id, userData);
 
     if(error) {
@@ -70,7 +67,7 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('set profile')
   async setProfile(client: Socket, userData) {
     const { roomId, user } = await this.multiService.setProfile(client.id, userData)
-    
+
     if(user) {
       client.to(roomId).emit('set profile', { user }) 
     }
@@ -107,7 +104,7 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if(roomId) {
       client.leave(roomId)
-      client.to(roomId).emit('member leaved', { clientId : client.id }) //신규 멤버 입장 알림
+      client.to(roomId).emit('user leaved', { clientId : client.id }) //신규 멤버 입장 알림
       return { roomId: roomId }
     }
   }

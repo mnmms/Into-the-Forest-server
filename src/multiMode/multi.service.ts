@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 import { RoomData, UserData, ChatData } from './multi.interface'
 
 const rooms = {};
+const users = {};
 
 @Injectable()
 export class MultiService {
@@ -19,7 +20,7 @@ export class MultiService {
 
       const roomId = uuid() // 신규 방 id 생성
 
-      const newMember = { //신규 멤버 생성
+      const newUser = { //신규 멤버 생성
         nickName: nickName,
         clientId: hostId
       }
@@ -27,7 +28,7 @@ export class MultiService {
       const newRoom = { // 신규 방 생성 
         maxNum: maxNum, 
         roomId: roomId,
-        memberList: [newMember],
+        userList: [newUser],
       }
     
       rooms[roomCode] = newRoom //방 목록에 추가
@@ -39,49 +40,49 @@ export class MultiService {
     const { roomCode, nickName } = userData
     if (!(roomCode in rooms)) return {error: '찾으시는 방이 없습니다 ㅠㅠ'};
 
-    const { memberList, roomId, maxNum } = rooms[roomCode];
+    const { userList, roomId, maxNum } = rooms[roomCode];
     const isRoomFull = list => list.length >= maxNum;
 
     
-    if (isRoomFull(memberList)) return {error: '방이 꽉 찼어요!'}
+    if (isRoomFull(userList)) return {error: '방이 꽉 찼어요!'}
 
-    const newMember = { //신규 멤버 생성
+    const newUser = { //신규 멤버 생성
       nickName: nickName,
       clientId: hostId}
-    console.log(newMember)
+    console.log(newUser)
     
-    memberList.push(newMember); //기존 방에 신규멤버 추가
-    console.log('신규멤버',memberList)
+    userList.push(newUser); //기존 방에 신규멤버 추가
+    console.log('신규멤버',userList)
   
-    return { roomId: roomId, newMember: newMember } 
+    return { roomId: roomId } 
   }
 
   async alert(hostId: string, userData) {
     const { roomCode } = userData;
     
     if(!(roomCode in rooms)) return {error: '방이 없군여!'}
-    const { roomId, memberList } = rooms[roomCode]
-    let index = memberList.forEach((ele, idx) => { 
+    const { roomId, userList } = rooms[roomCode]
+    let index = userList.forEach((ele, idx) => { 
       if(ele.clientId === hostId) return idx
     })
-    let member = memberList[index]
+    let user = userList[index]
 
-    return { roomId: roomId, user: member }
+    return { roomId: roomId, user: user }
   }
 
   setProfile(hostId: string, userData) {
     const { roomCode } = userData;
-    const { memberList, roomId } = rooms[roomCode];
+    const { userList, roomId } = rooms[roomCode];
 
-    let index = memberList.forEach((ele, idx) => {
+    let index = userList.forEach((ele, idx) => {
       if(ele.client === hostId) return idx
     })
 
-    let member = memberList[index];
-    if(userData.nickName) member.nickName = userData.nickName;
-    if(userData.photoUrl) member.photoUrl = userData.photoUrl;
+    let user = userList[index];
+    if(userData.nickName) user.nickName = userData.nickName;
+    if(userData.photoUrl) user.photoUrl = userData.photoUrl;
 
-    return { roomId: roomId, user: member }
+    return { roomId: roomId, user: user }
   }
 
   async leave(hostId: string, userData: UserData) {
