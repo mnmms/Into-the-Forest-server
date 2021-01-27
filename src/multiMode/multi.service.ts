@@ -72,8 +72,9 @@ export class MultiService {
 
   setProfile(hostId: string, userData) {
     const { roomCode } = userData;
+    console.log(userData)
     const { userList, roomId } = rooms[roomCode];
-
+    console.log(rooms[roomCode])
     let index = userList.forEach((ele, idx) => {
       if(ele.client === hostId) return idx
     })

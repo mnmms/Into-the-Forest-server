@@ -69,7 +69,7 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { roomId, user } = await this.multiService.setProfile(client.id, userData)
 
     if(user) {
-      client.to(roomId).emit('set profile', { user }) 
+      client.broadcast.to(roomId).emit('set profile', { user }) 
     }
   }
   //set profile
@@ -82,9 +82,9 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('chat')
   async chat(client: Socket, chatData: ChatData) {
     const { roomId } = await this.multiService.chat(chatData)
-    
+
     if(roomId) {
-    client.to(roomId).emit('chat', { chat: chatData, clientId: client.id })
+      client.broadcast.to(roomId).emit('chat', { chat: chatData, clientId: client.id })
     }
   }
 
