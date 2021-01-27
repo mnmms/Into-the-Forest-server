@@ -58,16 +58,30 @@ export class MultiService {
 
   async alert(hostId: string, userData) {
     const { roomCode } = userData;
-    const { roomId, memberList } = rooms[roomCode]
-
-    if(!(roomCode in rooms)) return {error: '방이 없군여!'}
     
-    let index = memberList.forEach((ele, idx) => {
+    if(!(roomCode in rooms)) return {error: '방이 없군여!'}
+    const { roomId, memberList } = rooms[roomCode]
+    let index = memberList.forEach((ele, idx) => { 
       if(ele.clientId === hostId) return idx
     })
     let member = memberList[index]
 
-    return { roomId: roomId, newMember: member }
+    return { roomId: roomId, user: member }
+  }
+
+  setProfile(hostId: string, userData) {
+    const { roomCode } = userData;
+    const { memberList, roomId } = rooms[roomCode];
+
+    let index = memberList.forEach((ele, idx) => {
+      if(ele.client === hostId) return idx
+    })
+
+    let member = memberList[index];
+    if(userData.nickName) member.nickName = userData.nickName;
+    if(userData.photoUrl) member.photoUrl = userData.photoUrl;
+
+    return { roomId: roomId, user: member }
   }
 
   async leave(hostId: string, userData: UserData) {
