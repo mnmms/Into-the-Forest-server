@@ -15,7 +15,7 @@ export class MultiService {
 
   async create(hostId: string, roomData: RoomData) {
       const { roomCode, maxNum, nickName } = roomData
-
+    
       if (roomCode in rooms) return {error: '방 이름이 중복됩니다.'} //룸코드 중복 검사 
 
       const roomId = uuid() // 신규 방 id 생성
@@ -24,7 +24,7 @@ export class MultiService {
         nickName: nickName,
         clientId: hostId
       }
-  
+      console.log(newUser)
       const newRoom = { // 신규 방 생성 
         maxNum: maxNum, 
         roomId: roomId,
@@ -32,7 +32,7 @@ export class MultiService {
       }
     
       rooms[roomCode] = newRoom //방 목록에 추가
-      console.log(rooms)
+      console.log(rooms[roomCode])
       return { roomId: roomId }
   }
 
@@ -62,8 +62,10 @@ export class MultiService {
     
     if(!(roomCode in rooms)) return {error: '방이 없군여!'}
     const { roomId, userList } = rooms[roomCode]
-    let index = userList.forEach((ele, idx) => { 
-      if(ele.clientId === hostId) return idx
+
+    let index;
+    userList.forEach((ele, idx) => { 
+      if(ele.clientId === hostId) index = idx
     })
     let user = userList[index]
 
@@ -72,17 +74,18 @@ export class MultiService {
 
   setProfile(hostId: string, userData) {
     const { roomCode } = userData;
-    console.log(userData)
     const { userList, roomId } = rooms[roomCode];
-    console.log(rooms[roomCode])
-    let index = userList.forEach((ele, idx) => {
-      if(ele.client === hostId) return idx
+    
+    let userIndex;
+    userList.forEach((ele, idx) => {
+      if(ele.clientId === hostId) userIndex = idx
     })
+    
+    let user = userList[userIndex]
 
-    let user = userList[index];
     if(userData.nickName) user.nickName = userData.nickName;
     if(userData.photoUrl) user.photoUrl = userData.photoUrl;
-
+    console.log(user)
     return { roomId: roomId, user: user }
   }
 
