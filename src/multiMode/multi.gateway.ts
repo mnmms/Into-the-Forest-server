@@ -93,11 +93,38 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if(roomId) {
       client.leave(roomId)
-      client.to(roomId).emit('user leaved', { clientId : client.id }) //신규 멤버 입장 알림
+      this.server.to(roomId).emit('user leaved', { clientId : client.id }) //신규 멤버 입장 알림
       return { roomId: roomId }
     }
   }
-  
+
+  @SubscribeMessage('sending signal')
+  async sendSignal(client: Socket, data) {
+    //roomCode 필요
+    const { roomId, initiator, signal } = await this.multiService.send(client.id, data)
+    this.server.to(roomId).emit('sending signal', { initiator, signal })
+  }
+
+  @SubscribeMessage('returning signal')
+  async returnSignal(client: Socket, data) {
+    //roomCode 필요
+    const { roomId, returner, signal } = await this.multiService.return(client.id, data)
+    this.server.to(roomId).emit('returning signal', { returner, signal })
+  }
+
+
+  // socket.on(EVENT.SENDING_SIGNAL, ({ signal, receiver }) => {
+  //   const initiator = members[socket.id];
+  //   const { socketId } = receiver;  // 이 부분 룸 id 맞는지 확인 필요
+  //   io.to(socketId).emit(EVENT.SENDING_SIGNAL, { initiator, signal });
+  // });
+
+  // socket.on(EVENT.RETURNING_SIGNAL, ({ signal, receiver }) => {
+  //   const returner = members[socket.id];
+  //   const { socketId } = receiver;
+  //   io.to(socketId).emit(EVENT.RETURNING_SIGNAL, { returner, signal });
+  // });
+
 
     afterInit(server: Server) {
       this.logger.log('Init');

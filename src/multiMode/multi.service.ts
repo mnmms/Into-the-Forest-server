@@ -101,4 +101,22 @@ export class MultiService {
     const { roomId } = rooms[chatData.roomCode];
     return { roomId : roomId }
   }
+
+  async send(hostId: string, data) {
+    const { roomCode, signal } = data;
+    const { roomId, userList } = rooms[roomCode]
+    const index = userList.findIndex(user => user.clientId === hostId)
+    const initiator = userList[index];
+
+    return { roomId : roomId, initiator: initiator, signal: signal }
+  }
+
+  async return(hostId: string, data) {
+    const { roomCode, signal } = data;
+    const { roomId, userList } = rooms[roomCode]
+    const index = userList.findIndex(user => user.clientId === hostId)
+    const returner = userList[index];
+
+    return { roomId : roomId, returner: returner, signal: signal }
+  }
 }
