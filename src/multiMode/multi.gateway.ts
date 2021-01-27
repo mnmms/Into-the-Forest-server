@@ -75,7 +75,7 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
   
   @SubscribeMessage('chat')
-  async chat(client: Socket, chatData: ChatData) {
+  async chat(client: Socket, chatData) {
     const { roomId } = await this.multiService.chat(chatData)
 
     if(roomId) {
@@ -111,6 +111,8 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { roomId, returner, signal } = await this.multiService.return(client.id, data)
     this.server.to(roomId).emit('returning signal', { returner, signal })
   }
+
+
 
 
   // socket.on(EVENT.SENDING_SIGNAL, ({ signal, receiver }) => {

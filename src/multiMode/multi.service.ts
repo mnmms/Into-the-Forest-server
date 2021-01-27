@@ -91,14 +91,16 @@ export class MultiService {
       console.log(hostId,'님이 떠나셨습니다..')
       console.log(userList); 
 
-      return { roomId : roomId}
+      return { roomId : roomId }
     } else {
       return { error : '룸이 없어요'}
     }
   }
 
-  async chat(chatData: ChatData) {
-    const { roomId } = rooms[chatData.roomCode];
+  async chat(chatData) {
+    const { roomCode, chat } = chatData;
+    const { roomId } = rooms[roomCode];
+    console.log(roomCode, chat.nickName, chat.content)
     return { roomId : roomId }
   }
 
