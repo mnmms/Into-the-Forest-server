@@ -11,5 +11,5 @@ export interface UserData {
 
 export interface ChatData {
   roomCode: string;
-  chat: string;
+  chat: object;
 }

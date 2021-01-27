@@ -88,14 +88,14 @@ export class MultiService {
   async leave(hostId: string, userData: UserData) {
     //data로 room code 가 들어온다는 가정 하에 
     const { roomCode, nickName } = userData;
-    const { memberList, roomId } = rooms[roomCode];
+    const { userList, roomId } = rooms[roomCode];
     if(roomCode in rooms) {
-      const index = memberList.forEach((ele, idx) => {
+      const index = userList.forEach((ele, idx) => {
         if(ele.clientId === hostId) return idx
       });
-      memberList.splice(index, 1); //기존 멤버 목록에서 삭제
+      userList.splice(index, 1); //기존 멤버 목록에서 삭제
       console.log(hostId,'님이 떠나셨습니다.')
-      console.log(memberList); 
+      console.log(userList); 
 
       return { roomId : roomId}
     } else {
@@ -103,16 +103,8 @@ export class MultiService {
     }
   }
 
-  async chat(hostId: string, chatData: ChatData) {
-    const { roomCode, chat } = chatData;
-    const { memberList, roomId } = rooms[roomCode]
-    
-    const index = memberList.forEach((ele, idx) => { //멤버 목록에 현재 hostid 있는지 확인
-      if(ele.clientId !== hostId) return idx
-    }) //chat 에서는 어떤 에러가 나는가? 
-
-    if(index) return { error: '방 회원이 아닙니다?!'} 
-    
-    return { roomId: roomId, chat: chat }
+  async chat(chatData: ChatData) {
+    const { roomId } = rooms[chatData.roomCode];
+    return { roomId : roomId }
   }
 }

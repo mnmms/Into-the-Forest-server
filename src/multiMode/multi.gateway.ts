@@ -81,18 +81,12 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   
   @SubscribeMessage('chat')
   async chat(client: Socket, chatData: ChatData) {
-    const { roomId, error, chat } = await this.multiService.chat(client.id, chatData)
-
-    if(error) {
-      return { error: error }
-    }
-
+    const { roomId } = await this.multiService.chat(chatData)
+    
     if(roomId) {
-      client.to(roomId).emit('chat', { chat })
+    client.to(roomId).emit('chat', { chat: chatData, clientId: client.id })
     }
   }
- //chat에 특정 user id 담기
-
 
   @SubscribeMessage('leave room')
   async leaveRoom(client: Socket, userData: UserData) {
