@@ -73,12 +73,6 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.to(roomId).emit('set profile', user ) 
     }
   }
-  //set profile
-  //nickName, photoUrl, roomcode 
-  //서버 저장
-  //저장된 값 set profile emit 
-  //{ member } : 전체 유저 list  
-  //{ user } : 프로필 요청한 특정 유저 , nickname, photoUrl, clientId : 일단 이걸로
   
   @SubscribeMessage('chat')
   async chat(client: Socket, chatData: ChatData) {

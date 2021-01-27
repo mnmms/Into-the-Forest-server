@@ -24,7 +24,7 @@ export class MultiService {
         nickName: nickName,
         clientId: hostId
       }
-      console.log(newUser)
+     
       const newRoom = { // 신규 방 생성 
         maxNum: maxNum, 
         roomId: roomId,
@@ -32,7 +32,7 @@ export class MultiService {
       }
     
       rooms[roomCode] = newRoom //방 목록에 추가
-      console.log(rooms[roomCode])
+      console.log('신규방', rooms)
       return { roomId: roomId }
   }
 
@@ -43,13 +43,11 @@ export class MultiService {
     const { userList, roomId, maxNum } = rooms[roomCode];
     const isRoomFull = list => list.length >= maxNum;
 
-    
     if (isRoomFull(userList)) return {error: '방이 꽉 찼어요!'}
 
     const newUser = { //신규 멤버 생성
       nickName: nickName,
       clientId: hostId}
-    console.log(newUser)
     
     userList.push(newUser); //기존 방에 신규멤버 추가
     console.log('신규멤버',userList)
