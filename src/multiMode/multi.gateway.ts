@@ -39,12 +39,13 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('join room')
   async joinRoom(client: Socket, userData: UserData): Promise<object> {
+    console.log('4', userData)
     const { roomId, error } = await this.multiService.join(client.id, userData)
 
     if(error) {
       return { error: error }
     }
-
+    console.log(roomId)
     if(roomId) {
       client.join(roomId)
       return { clientId: client.id, roomId: roomId }
@@ -69,7 +70,7 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { roomId, user } = await this.multiService.setProfile(client.id, userData)
 
     if(user) {
-      this.server.to(roomId).emit('set profile', { user }) 
+      this.server.to(roomId).emit('set profile', user) 
     }
   }
   //set profile

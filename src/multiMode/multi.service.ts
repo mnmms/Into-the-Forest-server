@@ -75,13 +75,10 @@ export class MultiService {
     console.log(userData)
     const { userList, roomId } = rooms[roomCode];
     console.log(rooms[roomCode])
-    let index = userList.forEach((ele, idx) => {
-      if(ele.client === hostId) return idx
-    })
-
-    let user = userList[index];
-    if(userData.nickName) user.nickName = userData.nickName;
-    if(userData.photoUrl) user.photoUrl = userData.photoUrl;
+    let index = userList.findIndex(user => user.clientId === hostId)
+    let user = userList[index]
+    if(userData.nickName) user.nickName = userData.nickName
+    if(userData.photoUrl) user.photoUrl = userData.photoUrl
 
     return { roomId: roomId, user: user }
   }
