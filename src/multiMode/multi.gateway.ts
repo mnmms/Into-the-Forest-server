@@ -60,7 +60,7 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     if(roomId) {
-      client.to(roomId).emit('user joined', { user }) //신규 멤버 입장 알림
+      this.server.to(roomId).emit('user joined', { user }) //신규 멤버 입장 알림
     }
   }
   
@@ -69,7 +69,7 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { roomId, user } = await this.multiService.setProfile(client.id, userData)
 
     if(user) {
-      client.broadcast.to(roomId).emit('set profile', { user }) 
+      this.server.to(roomId).emit('set profile', { user }) 
     }
   }
   //set profile
@@ -84,7 +84,7 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { roomId } = await this.multiService.chat(chatData)
 
     if(roomId) {
-      client.broadcast.to(roomId).emit('chat', { chat: chatData, clientId: client.id })
+      this.server.to(roomId).emit('chat', { chat: chatData, clientId: client.id })
     }
   }
 
