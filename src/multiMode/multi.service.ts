@@ -63,16 +63,8 @@ export class MultiService {
     if(!(roomCode in rooms)) return {error: '방이 없군여!'}
     const { roomId, userList } = rooms[roomCode]
 
-<<<<<<< HEAD
     const index = userList.findIndex(user => user.clientId === hostId)
     const user = userList[index]
-=======
-    let index;
-    userList.forEach((ele, idx) => { 
-      if(ele.clientId === hostId) index = idx
-    })
-    let user = userList[index]
->>>>>>> 367e35651ebca2bd41c96a119fda6a8fa4c256e1
 
     return { roomId: roomId, user: user }
   }
@@ -80,7 +72,6 @@ export class MultiService {
   setProfile(hostId: string, userData) {
     const { roomCode } = userData;
     const { userList, roomId } = rooms[roomCode];
-<<<<<<< HEAD
   
     const index = userList.findIndex(user => user.clientId === hostId)
     const user = userList[index]
@@ -88,19 +79,6 @@ export class MultiService {
     if(userData.nickName) user.nickName = userData.nickName;
     if(userData.photoUrl) user.photoUrl = userData.photoUrl;
     
-=======
-    
-    let userIndex;
-    userList.forEach((ele, idx) => {
-      if(ele.clientId === hostId) userIndex = idx
-    })
-    
-    let user = userList[userIndex]
-
-    if(userData.nickName) user.nickName = userData.nickName;
-    if(userData.photoUrl) user.photoUrl = userData.photoUrl;
-    console.log(user)
->>>>>>> 367e35651ebca2bd41c96a119fda6a8fa4c256e1
     return { roomId: roomId, user: user }
   }
 
@@ -112,7 +90,7 @@ export class MultiService {
       const index = userList.findIndex(user => user.clientId === hostId)
 
       userList.splice(index, 1); //기존 멤버 목록에서 삭제
-      console.log(hostId,'님이 떠나셨습니다.')
+      console.log(hostId,'님이 떠나셨습니다..')
       console.log(userList); 
 
       return { roomId : roomId}
