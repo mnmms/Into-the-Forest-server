@@ -43,7 +43,7 @@ export class MultiService {
     const { userList, roomId, maxNum } = rooms[roomCode];
     const isRoomFull = list => list.length >= maxNum;
 
-    if (isRoomFull(userList)) return {error: '방이 꽉 찼어요!'}
+    // if (isRoomFull(userList)) return {error: '방이 꽉 찼어요!'}
 
     const newUser = { //신규 멤버 생성
       nickName: nickName,
@@ -56,10 +56,8 @@ export class MultiService {
   }
 
   async alert(hostId: string, userData) {
-    const { roomCode } = userData;
-    
-    if(!(roomCode in rooms)) return {error: '방이 없군여!'}
-    const { roomId, userList } = rooms[roomCode]
+    if(!(userData in rooms)) return {error: '방이 없군여!'}
+    const { roomId, userList } = rooms[userData]
 
     const index = userList.findIndex(user => user.clientId === hostId)
     const user = userList[index]
