@@ -114,7 +114,6 @@ export class MultiService {
     const { userList } = rooms[roomCode]
     const index = userList.findIndex(user => user.socketId === hostId)
     const initiator = userList[index];
-    console.log('init', initiator)
     const socketId = receiver.socketId
     
     return { initiator: initiator, socketId: socketId, signal: signal,  }
@@ -125,7 +124,6 @@ export class MultiService {
     const { userList } = rooms[roomCode]
     const index = userList.findIndex(user => user.socketId === hostId)
     const returner = userList[index];
-
     const socketId = receiver.socketId;
 
     return { returner: returner, socketId: socketId, signal: signal }

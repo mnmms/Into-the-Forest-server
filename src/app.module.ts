@@ -9,6 +9,8 @@ import { RecordModule } from './record/record.module'
 import { Record } from './record/record.model'
 import { HealthCheckModule } from './healthCheck/healthCheck.module'
 import { MultiModule } from './multiMode/multi.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -29,6 +31,10 @@ import { MultiModule } from './multiMode/multi.module';
         models: [Rank, Record],
       }),
       inject: [ConfigService]
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'client'),
+      exclude: ['/api*'],
     }),
     RankModule,
     RecordModule,

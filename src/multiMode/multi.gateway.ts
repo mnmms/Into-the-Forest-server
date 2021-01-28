@@ -102,8 +102,6 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async sendSignal(client: Socket, data) {
     //roomCode 필요
     const { socketId, initiator, signal } = await this.multiService.send(client.id, data)
-    
-    console.log('socketId',socketId)
     this.server.to(socketId).emit('sending signal', { initiator, signal })
   }
 
@@ -111,7 +109,6 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async returnSignal(client: Socket, data) {
     //roomCode 필요
     const { socketId, returner, signal } = await this.multiService.return(client.id, data)
-    console.log('socketId',socketId)
     this.server.to(socketId).emit('returning signal', { returner, signal })
   }
 
