@@ -22,7 +22,7 @@ export class MultiService {
 
       const newUser = { //신규 멤버 생성
         nickName: nickName,
-        clientId: hostId,
+        socketId: hostId,
         photoUrl: '../../images/card/card5.png'
       }
      
@@ -48,7 +48,7 @@ export class MultiService {
 
     const newUser = { //신규 멤버 생성
       nickName: nickName,
-      clientId: hostId,
+      socketId: hostId,
       photoUrl: '../../images/card/card5.png'
     }
     
@@ -114,7 +114,8 @@ export class MultiService {
     const { roomId, userList } = rooms[roomCode]
     const index = userList.findIndex(user => user.clientId === hostId)
     const initiator = userList[index];
-
+    
+    console.log('initiator',initiator)
     return { roomId : roomId, initiator: initiator, signal: signal }
   }
 
