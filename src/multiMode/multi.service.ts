@@ -22,7 +22,8 @@ export class MultiService {
 
       const newUser = { //신규 멤버 생성
         nickName: nickName,
-        clientId: hostId
+        clientId: hostId,
+        photoUrl: '../../images/card/card5.png'
       }
      
       const newRoom = { // 신규 방 생성 
@@ -43,11 +44,13 @@ export class MultiService {
     const { userList, roomId, maxNum } = rooms[roomCode];
     const isRoomFull = list => list.length >= maxNum;
 
-    // if (isRoomFull(userList)) return {error: '방이 꽉 찼어요!'}
+    if (isRoomFull(userList)) return {error: '방이 꽉 찼어요!'}
 
     const newUser = { //신규 멤버 생성
       nickName: nickName,
-      clientId: hostId}
+      clientId: hostId,
+      photoUrl: '../../images/card/card5.png'
+    }
     
     userList.push(newUser); //기존 방에 신규멤버 추가
     console.log('신규멤버',userList)
@@ -59,10 +62,14 @@ export class MultiService {
     if(!(userData in rooms)) return {error: '방이 없군여!'}
     const { roomId, userList } = rooms[userData]
 
-    const index = userList.findIndex(user => user.clientId === hostId)
-    const user = userList[index]
+    // const index = userList.findIndex(user => user.clientId === hostId)
+    // const user = userList[index]
 
-    return { roomId: roomId, user: user }
+    const data = { 
+      clientId: hostId, 
+      userList: userList }
+    
+    return { roomId: roomId, data: data }
   }
 
   setProfile(hostId: string, userData) {
@@ -118,5 +125,12 @@ export class MultiService {
     const returner = userList[index];
 
     return { roomId : roomId, returner: returner, signal: signal }
+  }
+
+  async spaceDown(hostId: string, data) {
+    const{ roomCode } = data
+    const { roomId } = rooms[roomCode]
+
+    return { roomId: roomId, clientId: hostId }
   }
 }

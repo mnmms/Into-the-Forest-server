@@ -54,14 +54,14 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('user joined')
   async alertUser(client: Socket, userData) {
-    const { roomId, error, user } = await this.multiService.alert(client.id, userData);
-    console.log(roomId, user, error)
+    const { roomId, error, data } = await this.multiService.alert(client.id, userData);
+    console.log(roomId, data, error)
     if(error) {
       return { error: error }
     }
 
     if(roomId) {
-      this.server.to(roomId).emit('user joined', user) //신규 멤버 입장 알림
+      this.server.to(roomId).emit('user joined', data ) //신규 멤버 입장 알림
     }
   }
   
@@ -110,6 +110,14 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     //roomCode 필요
     const { roomId, returner, signal } = await this.multiService.return(client.id, data)
     this.server.to(roomId).emit('returning signal', { returner, signal })
+  }
+
+  @SubscribeMessage('space down') 
+  async  spaceDown(client: Socket, data) {
+    //roomCode 필요
+    const { roomId, clientId } = await this.multiService.spaceDown(client.id, data);
+
+    this.server.to(roomId).emit('space down', clientId)
   }
 
 
