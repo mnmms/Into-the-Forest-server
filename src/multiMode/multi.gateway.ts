@@ -55,7 +55,7 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('user joined')
   async alertUser(client: Socket, userData) {
     const { roomId, error, data } = await this.multiService.alert(client.id, userData);
-    console.log(roomId, data, error)
+    console.log('user joined', roomId)
     if(error) {
       return { error: error }
     }
@@ -101,15 +101,18 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('sending signal')
   async sendSignal(client: Socket, data) {
     //roomCode 필요
-    const { roomId, initiator, signal } = await this.multiService.send(client.id, data)
-    this.server.to(roomId).emit('sending signal', { initiator, signal })
+    const { socketId, initiator, signal } = await this.multiService.send(client.id, data)
+    
+    console.log('socketId',socketId)
+    this.server.to(socketId).emit('sending signal', { initiator, signal })
   }
 
   @SubscribeMessage('returning signal')
   async returnSignal(client: Socket, data) {
     //roomCode 필요
-    const { roomId, returner, signal } = await this.multiService.return(client.id, data)
-    this.server.to(roomId).emit('returning signal', { returner, signal })
+    const { socketId, returner, signal } = await this.multiService.return(client.id, data)
+    console.log('socketId',socketId)
+    this.server.to(socketId).emit('returning signal', { returner, signal })
   }
 
   @SubscribeMessage('space down') 

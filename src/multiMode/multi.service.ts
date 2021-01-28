@@ -43,7 +43,7 @@ export class MultiService {
 
     const { userList, roomId, maxNum } = rooms[roomCode];
     const isRoomFull = list => list.length >= maxNum;
-
+    console.log('userList', userList)
     if (isRoomFull(userList)) return {error: '방이 꽉 찼어요!'}
 
     const newUser = { //신규 멤버 생성
@@ -76,7 +76,7 @@ export class MultiService {
     const { roomCode } = userData;
     const { userList, roomId } = rooms[roomCode];
   
-    const index = userList.findIndex(user => user.clientId === hostId)
+    const index = userList.findIndex(user => user.socketId === hostId)
     const user = userList[index]
 
     if(userData.nickName) user.nickName = userData.nickName;
@@ -90,7 +90,7 @@ export class MultiService {
     const { roomCode, nickName } = userData;
     const { userList, roomId } = rooms[roomCode];
     if(roomCode in rooms) {
-      const index = userList.findIndex(user => user.clientId === hostId)
+      const index = userList.findIndex(user => user.socketId === hostId)
 
       userList.splice(index, 1); //기존 멤버 목록에서 삭제
       console.log(hostId,'님이 떠나셨습니다..')
@@ -110,22 +110,25 @@ export class MultiService {
   }
 
   async send(hostId: string, data) {
-    const { roomCode, signal } = data;
-    const { roomId, userList } = rooms[roomCode]
-    const index = userList.findIndex(user => user.clientId === hostId)
+    const { roomCode, signal, receiver } = data;
+    const { userList } = rooms[roomCode]
+    const index = userList.findIndex(user => user.socketId === hostId)
     const initiator = userList[index];
+    console.log('init', initiator)
+    const socketId = receiver.socketId
     
-    console.log('initiator',initiator)
-    return { roomId : roomId, initiator: initiator, signal: signal }
+    return { initiator: initiator, socketId: socketId, signal: signal,  }
   }
 
   async return(hostId: string, data) {
-    const { roomCode, signal } = data;
-    const { roomId, userList } = rooms[roomCode]
-    const index = userList.findIndex(user => user.clientId === hostId)
+    const { roomCode, signal, receiver } = data;
+    const { userList } = rooms[roomCode]
+    const index = userList.findIndex(user => user.socketId === hostId)
     const returner = userList[index];
 
-    return { roomId : roomId, returner: returner, signal: signal }
+    const socketId = receiver.socketId;
+
+    return { returner: returner, socketId: socketId, signal: signal }
   }
 
   async spaceDown(hostId: string, data) {
