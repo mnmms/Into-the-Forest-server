@@ -33,8 +33,8 @@ import { join } from 'path';
       inject: [ConfigService]
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'client'),
-    }),
+      rootPath: join(__dirname, '..', 'public'),
+  }),
     RankModule,
     RecordModule,
     HealthCheckModule,
