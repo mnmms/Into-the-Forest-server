@@ -126,10 +126,9 @@ export class MultiService {
 
     const index = userList.findIndex(user => user.socketId === hostId)
     const initiator = userList[index];
-    const socketId = receiver.socketId
-    console.log('send')
+    const socketId = receiver.socketId;
     
-    return { initiator: initiator, socketId: socketId, signal: signal,  }
+    return { initiator: initiator, socketId: socketId, signal: signal }
   }
 
   async return(hostId: string, data) {
@@ -150,15 +149,16 @@ export class MultiService {
   }
   
   async sendReady(hostId: string, data) {
-    const{ roomCode } = data
-    const{ userList } = rooms[roomCode]
+    const{ userList } = rooms[data]
 
-    rooms[roomCode].ready.push('ready');
+    rooms[data].ready.push('ready');
     
-    if(rooms[roomCode].ready.length === 4) {
-      rooms[roomCode].ready.length = 0;
-      return { socketId: userList[0].isHost, start: 'start' }
+    if(rooms[data].ready.length === 4) {
+      rooms[data].ready.length = 0;
+      return {response: { socketId: userList[0].isHost, start: 'start' }}
     }
+    
+    return {response: { socketId: userList[0].isHost }}
   }
 
 }

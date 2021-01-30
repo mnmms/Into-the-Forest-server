@@ -83,19 +83,19 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  @SubscribeMessage('leave room') //나가기 버튼 눌렀을 때
-  async leaveRoom(client: Socket, userData: UserData) {
-    const { roomId, error } = await this.multiService.leave(client.id)
+  // @SubscribeMessage('leave room') //나가기 버튼 눌렀을 때
+  // async leaveRoom(client: Socket, userData: UserData) {
+  //   const { roomId, error } = await this.multiService.leave(client.id)
 
-    if(error) {
-      return { error: error }
-    }
+  //   if(error) {
+  //     return { error: error }
+  //   }
 
-    if(roomId) {
-      client.leave(roomId)
-      this.server.to(roomId).emit('user leaved', { clientId : client.id }) //멤버 퇴장 알림
-    }
-  }
+  //   if(roomId) {
+  //     client.leave(roomId)
+  //     this.server.to(roomId).emit('user leaved', { clientId : client.id }) //멤버 퇴장 알림
+  //   }
+  // }
 
   @SubscribeMessage('sending signal')
   async sendSignal(client: Socket, data) {
@@ -121,9 +121,11 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('send ready') 
   async sendReady(client: Socket, data) {
-    const { socketId, start } = await this.multiService.sendReady(client.id, data)
-    if(start) {
-    this.server.to(socketId).emit('send ready', 'start')
+    console.log('ready',data)
+    const { response } = await this.multiService.sendReady(client.id, data)
+    if(response.start) {
+      console.log('gg', response.socketId)
+    this.server.to(response.socketId).emit('send ready', response)
     }
   }
 
