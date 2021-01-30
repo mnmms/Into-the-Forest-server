@@ -24,13 +24,15 @@ export class MultiService {
         nickName: nickName,
         socketId: hostId,
         photoUrl: '../../images/card/card5.png',
-        roomCode: roomCode
+        roomCode: roomCode,
+        isHost: hostId,
       }
      
       const newRoom = { // 신규 방 생성 
         maxNum: maxNum, 
         roomId: roomId,
         userList: [newUser],
+        ready:[],
       }
       
       users[hostId] = newUser //유저 목록에 추가
@@ -82,10 +84,11 @@ export class MultiService {
   
     const index = userList.findIndex(user => user.socketId === hostId)
     const user = userList[index]
-
+   
     if(userData.nickName) user.nickName = userData.nickName;
     if(userData.photoUrl) user.photoUrl = userData.photoUrl;
-    
+    console.log(user)
+
     return { roomId: roomId, user: user }
   }
 
@@ -134,7 +137,6 @@ export class MultiService {
     const { userList } = rooms[roomCode]
 
     const index = userList.findIndex(user => user.socketId === hostId)
-    console.log('return')
     const returner = userList[index];
     const socketId = receiver.socketId;
     return { returner: returner, socketId: socketId, signal: signal }
@@ -146,4 +148,16 @@ export class MultiService {
 
     return { roomId: roomId, clientId: hostId }
   }
+  
+  async sendReady(hostId: string, data) {
+    const{ roomCode } = data
+    const{ ready, userList } = rooms[roomCode]
+  
+    ready.push('ready');
+    
+    if(ready.length === 4) {
+      return { socketId: userList[0].isHost, start: 'start' }
+    }
+  }
+
 }

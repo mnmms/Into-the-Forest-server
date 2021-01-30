@@ -119,6 +119,14 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(roomId).emit('space down', clientId)
   }
 
+  @SubscribeMessage('send ready') 
+  async sendReady(client: Socket, data) {
+    const { socketId, start } = await this.multiService.sendReady(client.id, data)
+    if(start) {
+    this.server.to(socketId).emit('send ready', 'start')
+    }
+  }
+
 
 
 
