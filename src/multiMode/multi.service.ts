@@ -151,11 +151,12 @@ export class MultiService {
   
   async sendReady(hostId: string, data) {
     const{ roomCode } = data
-    const{ ready, userList } = rooms[roomCode]
-  
-    ready.push('ready');
+    const{ userList } = rooms[roomCode]
+
+    rooms[roomCode].ready.push('ready');
     
-    if(ready.length === 4) {
+    if(rooms[roomCode].ready.length === 4) {
+      rooms[roomCode].ready.length = 0;
       return { socketId: userList[0].isHost, start: 'start' }
     }
   }
