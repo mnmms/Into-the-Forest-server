@@ -19,7 +19,10 @@ export class RankController {
   
   @Post('reg')
   create(@Body() rank: RankDto) {
-    if(rank.nickname && rank.score && rank.stage && rank.subcha) {
+    if(rank.nickname !== '' 
+    && typeof rank.score === 'number' 
+    && typeof rank.stage === 'number'
+    && typeof rank.subcha === 'number') {
       return this.rankService.create(rank);
     } else {
       throw new HttpException(
