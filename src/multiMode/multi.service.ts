@@ -23,7 +23,8 @@ export class MultiService {
       const newUser = { //신규 멤버 생성
         nickName: nickName,
         socketId: hostId,
-        photoUrl: '../../images/card/card5.png'
+        photoUrl: '../../images/card/card5.png',
+        roomCode: roomCode
       }
      
       const newRoom = { // 신규 방 생성 
@@ -31,7 +32,8 @@ export class MultiService {
         roomId: roomId,
         userList: [newUser],
       }
-    
+      
+      users[hostId] = newUser //유저 목록에 추가
       rooms[roomCode] = newRoom //방 목록에 추가
       console.log('신규방', rooms)
       return { roomId: roomId }
@@ -49,9 +51,11 @@ export class MultiService {
     const newUser = { //신규 멤버 생성
       nickName: nickName,
       socketId: hostId,
-      photoUrl: '../../images/card/card5.png'
+      photoUrl: '../../images/card/card5.png',
+      roomCode: roomCode
     }
     
+    users[hostId] = newUser; //유저 목록에 추가
     userList.push(newUser); //기존 방에 신규멤버 추가
     console.log('신규멤버',userList)
   
@@ -85,17 +89,21 @@ export class MultiService {
     return { roomId: roomId, user: user }
   }
 
-  async leave(hostId: string, userData: UserData) {
-    //data로 room code 가 들어온다는 가정 하에 
-    const { roomCode, nickName } = userData;
+  async leave(hostId: string) { //브라우저 창에서 x 눌렀을 때 
+    const { roomCode } = users[hostId];
     const { userList, roomId } = rooms[roomCode];
     if(roomCode in rooms) {
       const index = userList.findIndex(user => user.socketId === hostId)
 
-      userList.splice(index, 1); //기존 멤버 목록에서 삭제
+      userList.splice(index, 1); //룸 멤버 목록에서 삭제
+      delete users[hostId] //전체 유저 목록에서 삭제
       console.log(hostId,'님이 떠나셨습니다..')
-      console.log(userList); 
-
+      if(userList.length === 0) {
+        delete rooms[roomCode]
+        console.log('모두 나감')
+      }
+      console.log(rooms[roomCode])
+      console.log(users)
       return { roomId : roomId }
     } else {
       return { error : '룸이 없어요'}
@@ -112,9 +120,11 @@ export class MultiService {
   async send(hostId: string, data) {
     const { roomCode, signal, receiver } = data;
     const { userList } = rooms[roomCode]
+
     const index = userList.findIndex(user => user.socketId === hostId)
     const initiator = userList[index];
     const socketId = receiver.socketId
+    console.log('send')
     
     return { initiator: initiator, socketId: socketId, signal: signal,  }
   }
@@ -122,10 +132,11 @@ export class MultiService {
   async return(hostId: string, data) {
     const { roomCode, signal, receiver } = data;
     const { userList } = rooms[roomCode]
+
     const index = userList.findIndex(user => user.socketId === hostId)
+    console.log('return')
     const returner = userList[index];
     const socketId = receiver.socketId;
-
     return { returner: returner, socketId: socketId, signal: signal }
   }
 

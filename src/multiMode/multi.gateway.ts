@@ -83,9 +83,9 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  @SubscribeMessage('leave room')
+  @SubscribeMessage('leave room') //나가기 버튼 눌렀을 때
   async leaveRoom(client: Socket, userData: UserData) {
-    const { roomId, error } = await this.multiService.leave(client.id, userData)
+    const { roomId, error } = await this.multiService.leave(client.id)
 
     if(error) {
       return { error: error }
@@ -93,8 +93,7 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if(roomId) {
       client.leave(roomId)
-      this.server.to(roomId).emit('user leaved', { clientId : client.id }) //신규 멤버 입장 알림
-      return { roomId: roomId }
+      this.server.to(roomId).emit('user leaved', { clientId : client.id }) //멤버 퇴장 알림
     }
   }
 
@@ -136,15 +135,25 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // });
 
 
-    afterInit(server: Server) {
+    async afterInit(server: Server) {
       this.logger.log('Init');
     }
   
-    handleDisconnect(client: Socket) {
+    async handleDisconnect(client: Socket) { //브라우저 창에서 x 눌렀을 때
       this.logger.log(`Client disconnected: ${client.id}`);
+      const { roomId, error } = await this.multiService.leave(client.id);
+
+      if(error) {
+        return { error: error }
+      }
+
+      if(roomId) {
+        client.leave(roomId)
+        this.server.to(roomId).emit('user leaved', { socketId : client.id }) //멤버 퇴장 알림
+      }
     }
   
-    handleConnection(client: Socket) {
+    async handleConnection(client: Socket) {
       this.logger.log(`Client connected: ${client.id}`)
     }
 }
