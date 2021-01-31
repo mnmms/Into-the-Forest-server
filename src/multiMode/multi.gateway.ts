@@ -83,19 +83,19 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  // @SubscribeMessage('leave room') //나가기 버튼 눌렀을 때
-  // async leaveRoom(client: Socket, userData: UserData) {
-  //   const { roomId, error } = await this.multiService.leave(client.id)
+  @SubscribeMessage('leave room') //나가기 버튼 눌렀을 때
+  async leaveRoom(client: Socket, userData: UserData) {
+    const { roomId, error } = await this.multiService.leave(client.id)
 
-  //   if(error) {
-  //     return { error: error }
-  //   }
+    if(error) {
+      return { error: error }
+    }
 
-  //   if(roomId) {
-  //     client.leave(roomId)
-  //     this.server.to(roomId).emit('user leaved', { clientId : client.id }) //멤버 퇴장 알림
-  //   }
-  // }
+    if(roomId) {
+      client.leave(roomId)
+      this.server.to(roomId).emit('user leaved', { clientId : client.id }) //멤버 퇴장 알림
+    }
+  }
 
   @SubscribeMessage('sending signal')
   async sendSignal(client: Socket, data) {
@@ -111,24 +111,29 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(socketId).emit('returning signal', { returner, signal })
   }
 
-  @SubscribeMessage('space down') 
-  async  spaceDown(client: Socket, data) {
-    //roomCode 필요
-    const { roomId, clientId } = await this.multiService.spaceDown(client.id, data);
-
-    this.server.to(roomId).emit('space down', clientId)
-  }
-
   @SubscribeMessage('send ready') 
   async sendReady(client: Socket, data) {
-    console.log('ready',data)
     const { response } = await this.multiService.sendReady(client.id, data)
     if(response.start) {
-      console.log('gg', response.socketId)
     this.server.to(response.socketId).emit('send ready', response)
     }
   }
 
+  @SubscribeMessage('game start') 
+  async gameStart(client: Socket, data) {
+    const { response } = await this.multiService.gameStart(client.id, data)
+    if(response.start) {
+      this.server.to(response.roomId).emit('game start', response)
+    }
+  }
+
+  @SubscribeMessage('send result') 
+  async sendResult(client: Socket, gameResult) {
+    const { response } = await this.multiService.sendResult(client.id, gameResult)
+    if(response.userList) {
+      this.server.to(response.roomId).emit('send result', response.userList)
+    }
+  }
 
 
 

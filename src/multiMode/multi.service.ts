@@ -26,6 +26,7 @@ export class MultiService {
         photoUrl: '../../images/card/card5.png',
         roomCode: roomCode,
         isHost: hostId,
+        gameResult: {}
       }
      
       const newRoom = { // 신규 방 생성 
@@ -33,6 +34,7 @@ export class MultiService {
         roomId: roomId,
         userList: [newUser],
         ready:[],
+        gameOver:[],
       }
       
       users[hostId] = newUser //유저 목록에 추가
@@ -54,7 +56,8 @@ export class MultiService {
       nickName: nickName,
       socketId: hostId,
       photoUrl: '../../images/card/card5.png',
-      roomCode: roomCode
+      roomCode: roomCode,
+      gameResult: {}
     }
     
     users[hostId] = newUser; //유저 목록에 추가
@@ -140,25 +143,42 @@ export class MultiService {
     const socketId = receiver.socketId;
     return { returner: returner, socketId: socketId, signal: signal }
   }
-
-  async spaceDown(hostId: string, data) {
-    const{ roomCode } = data
-    const { roomId } = rooms[roomCode]
-
-    return { roomId: roomId, clientId: hostId }
-  }
   
-  async sendReady(hostId: string, data) {
-    const{ userList } = rooms[data]
+  async sendReady(hostId: string, roomCode) {
+    const{ userList } = rooms[roomCode]
 
-    rooms[data].ready.push('ready');
+    rooms[roomCode].ready.push('ready');
     
-    if(rooms[data].ready.length === 4) {
-      rooms[data].ready.length = 0;
+    if(rooms[roomCode].ready.length === 4) {
+      rooms[roomCode].ready.length = 0;
       return {response: { socketId: userList[0].isHost, start: 'start' }}
     }
     
     return {response: { socketId: userList[0].isHost }}
   }
 
+  async gameStart(hostId: string, roomCode) {
+    const{ roomId } = rooms[roomCode];
+    return {response: {roomId: roomId, start: 'real start'}}
+  }
+
+  async sendResult(hostId: string, gameResult) {
+    const{ roomCode, result } = gameResult
+    const{ roomId, userList, gameOver } = rooms[roomCode]
+    
+    const index = userList.findIndex(user => user.socketId === hostId)
+    userList[index].gameResult = {
+      ...result,
+    }
+  
+    gameOver.push(hostId)
+    console.log('count',gameOver)
+    
+    if(gameOver.length === 4) {
+      console.log('gameover')
+      return {response: {roomId: roomId, userList: userList}}
+    }
+
+    return {response: {roomId: roomId}}
+  }
 }
