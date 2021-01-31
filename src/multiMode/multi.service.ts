@@ -145,7 +145,7 @@ export class MultiService {
   }
   
   async sendReady(hostId: string, roomCode) {
-    const{ userList } = rooms[roomCode]
+    const{ userList, roomId } = rooms[roomCode]
 
     rooms[roomCode].ready.push('ready');
     
@@ -154,7 +154,7 @@ export class MultiService {
       return {response: { socketId: userList[0].isHost, start: 'start' }}
     }
     
-    return {response: { socketId: userList[0].isHost }}
+    return {response: { socketId: userList[0].isHost, roomId: roomId }}
   }
 
   async gameStart(hostId: string, roomCode) {
