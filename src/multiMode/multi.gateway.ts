@@ -117,12 +117,10 @@ export class MultiGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if(response.start) {
     this.server.to(response.socketId).emit('send ready', response)
+    this.server.to(response.roomId).emit('ready check', client.id)
     }
 
-    console.log(1)
     this.server.to(response.roomId).emit('ready check', client.id)
-    console.log(client.id)
-    console.log(2)
   }
 
   @SubscribeMessage('game start') 
