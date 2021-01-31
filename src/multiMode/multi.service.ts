@@ -151,7 +151,7 @@ export class MultiService {
     
     if(rooms[roomCode].ready.length === 4) {
       rooms[roomCode].ready.length = 0;
-      return {response: { socketId: userList[0].isHost, start: 'start' }}
+      return {response: { socketId: userList[0].isHost, roomId: roomId, start: 'start' }}
     }
     
     return {response: { socketId: userList[0].isHost, roomId: roomId }}
