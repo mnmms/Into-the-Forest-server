@@ -52,7 +52,7 @@ export class MultiService {
     console.log('userList', userList)
     if (isRoomFull(userList)) return {error: '방이 꽉 찼어요!'}
 
-    const newUser = { //신규 멤버 생성
+    const newUser = { 
       nickName: nickName,
       socketId: hostId,
       photoUrl: 'https://elb.intotheforest.space/card5.png',
