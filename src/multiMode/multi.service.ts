@@ -23,7 +23,7 @@ export class MultiService {
       const newUser = { //신규 멤버 생성
         nickName: nickName,
         socketId: hostId,
-        photoUrl: '../../images/card/card5.png',
+        photoUrl: 'https://elb.intotheforest.space/card5.png',
         roomCode: roomCode,
         isHost: hostId,
         gameResult: {}
@@ -55,7 +55,7 @@ export class MultiService {
     const newUser = { //신규 멤버 생성
       nickName: nickName,
       socketId: hostId,
-      photoUrl: '../../images/card/card5.png',
+      photoUrl: 'https://elb.intotheforest.space/card5.png',
       roomCode: roomCode,
       gameResult: {}
     }
