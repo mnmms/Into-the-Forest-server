@@ -7,10 +7,16 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async validateUser(user: any) {
-    const payload = { memo: 'Into The Forest!'}
+  async validateUser() {
+    const payload = { key: 'mongmong' };
     return {
-      access_token: this.jwtService.sign(payload)
+      accessToken: this.jwtService.sign(payload)
+    }
+  }
+
+  async validate(data: any) {
+    if(data.key === 'mongmong') {
+      return { message: 'ok'}
     }
   }
 }

@@ -1,22 +1,19 @@
 import { Controller, Get, Post, Body, Headers, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { RankService } from './rank.service';
 import { RankDto } from './dto/rank.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('rank')
 export class RankController {
   constructor(private rankService: RankService) {}
   
+  @UseGuards(AuthGuard('jwt'))
   @Get('load')
-  load(@Headers('secretcode') secretCode: string) {
-    if(secretCode) {
-      return this.rankService.load(secretCode);
-    } else {
-      throw new HttpException(
-        'Insufficient parameters',
-        HttpStatus.BAD_REQUEST);
-    }
+  load() {
+    return this.rankService.load();
   }
   
+  @UseGuards(AuthGuard('jwt'))
   @Post('reg')
   create(@Body() rank: RankDto) {
     if(rank.nickname !== '' 

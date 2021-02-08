@@ -14,28 +14,36 @@ export class RankService {
     this.SECRET_CODE = 'shelter';
   }
   
-  async load(secretCode: string) { 
-    if(secretCode === this.SECRET_CODE) {
-      return await this.rank.findAll({
-        limit: 10,
-        order: [['score', 'DESC']],
-        attributes: { exclude: ['id', 'updatedAt']}
-      })
+  async load() { 
+    const ranking = await this.rank.findAll({
+      limit: 10,
+      order: [['score', 'DESC']],
+      attributes: { exclude: ['id', 'updatedAt']}
+    })
+    
+    if(ranking) {
+      return ranking
     } else {
       throw new HttpException(
-        'Rank with this secret code does not exist',
+        'Rank does not exist',
         HttpStatus.NOT_FOUND);
     }
   }
 
   async create(rank: RankInt) {
-    const ranking = await this.rank.create({
-      nickname: rank.nickname,
-      score: rank.score,
-      stage: rank.stage,
-      subcha: rank.subcha
-    })
-    return await Object.assign({
-      message: 'ok' });
+    if(rank.score >= 60000) {
+      throw new HttpException(
+        'Wrong access',
+        HttpStatus.FORBIDDEN);
+    } else {
+      const ranking = await this.rank.create({
+        nickname: rank.nickname,
+        score: rank.score,
+        stage: rank.stage,
+        subcha: rank.subcha
+      })
+      return await Object.assign({
+        message: 'ok' });
+    }
   }
 }
